@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户资料</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .btn, button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover, button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-home a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-home a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>用户资料</h1>
+
+    <!-- 显示用户信息 -->
+    <p><strong>用户 ID：</strong> <span th:text="${user.id}">[ID]</span></p>
+    <p><strong>用户名：</strong> <span th:text="${user.username}">[Username]</span></p>
+    <p><strong>昵称：</strong> <span th:text="${user.nickname}">[Nickname]</span></p>
+
+    <!-- 编辑资料链接 -->
+    <a class="btn" th:href="@{/users/update/{id}(id=${user.id})}">编辑资料</a>
+
+    <!-- 修改密码表单 -->
+    <form th:action="@{/users/change-password}" method="post">
+        <input type="hidden" name="userId" th:value="${user.id}"/>
+        <label for="oldPassword">旧密码：</label>
+        <input type="password" id="oldPassword" name="oldPassword" placeholder="请输入旧密码" required/>
+
+        <label for="newPassword">新密码：</label>
+        <input type="password" id="newPassword" name="newPassword" placeholder="请输入新密码" required/>
+
+        <button type="submit">修改密码</button>
+    </form>
+
+    <!-- 错误提示信息 -->
+    <p th:if="${error}" class="error" th:text="${error}">[错误信息]</p>
+
+    <!-- 返回主页链接 -->
+    <div class="back-home">
+        <a th:href="@{/users/login}">返回主页</a>
+    </div>
+</div>
+</body>
+</html>

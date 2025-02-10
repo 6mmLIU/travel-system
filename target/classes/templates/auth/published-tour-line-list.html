@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>旅游线路列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+
+        table th {
+            background: #007bff;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        table td {
+            color: #495057;
+            font-size: 14px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+<h1>旅游线路列表</h1>
+<table>
+    <thead>
+    <tr>
+        <th>标题</th>
+        <th>目的地</th>
+        <th>价格</th>
+        <th>时长（天）</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="line : ${tourLines}">
+        <td th:text="${line.title}"></td>
+        <td th:text="${line.destination}"></td>
+        <td th:text="${line.price}"></td>
+        <td th:text="${line.duration}"></td>
+    </tr>
+    <tr th:if="${tourLines.size() == 0}">
+        <td colspan="4">暂无旅游线路</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

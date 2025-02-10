@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.travelsystem.mapper.MemberMapper">
+
+    <!-- 根据 ID 查询会员 -->
+    <select id="getMemberById" resultType="com.example.travelsystem.model.Member">
+        SELECT * FROM members WHERE id = #{id}
+    </select>
+
+    <!-- 更新会员信息 -->
+    <update id="updateMember">
+        UPDATE members
+        SET name = #{name},
+            email = #{email},
+            phone = #{phone},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除会员 -->
+    <delete id="deleteMember">
+        DELETE FROM members WHERE id = #{id}
+    </delete>
+
+    <!-- 按关键字搜索会员（按姓名或邮箱） -->
+    <select id="searchMembers" resultType="com.example.travelsystem.model.Member">
+        SELECT * FROM members
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+           OR email LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

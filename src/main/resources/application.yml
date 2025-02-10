@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  servlet:
+    context-path: / # 配置上下文路径为空，即默认根路径
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/travelsystem?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    devtools:
+      restart:
+        enabled: true # 开启热加载（Spring DevTools）
+      livereload:
+        enabled: true # 配置 LiveReload 支持
+
+
+  thymeleaf: # 优化 Thymeleaf 热加载
+    cache: false
+
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+  web:
+    resources:
+      cache:
+        period: 0s
+      chain:
+        cache: false
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.travelsystem.model
+
+logging:
+  level:
+    com.example.travelsystem: DEBUG
+    org.mybatis: DEBUG
+
+
+
+

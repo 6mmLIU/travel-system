@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>会员列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .add-member,
+        .search-form button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .add-member:hover,
+        .search-form button:hover {
+            background: #218838;
+        }
+        .search-form input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+        table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+        .action-buttons a,
+        .action-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .action-buttons a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .edit {
+            background-color: #ffc107;
+        }
+        .edit:hover {
+            background-color: #e0a800;
+        }
+        .delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .delete:hover {
+            background-color: #c82333;
+        }
+        .pagination {
+            text-align: center;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            color: #007bff;
+            border: 1px solid #007bff;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .pagination a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .alert.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>会员列表</h1>
+
+    <!-- 搜索表单 -->
+    <form class="search-form" th:action="@{/members/search}" method="get" style="margin-bottom: 15px;">
+        <input type="text" name="keyword" placeholder="搜索姓名或邮箱" required>
+        <button type="submit">搜索</button>
+    </form>
+
+    <!-- 去掉了 filter 表单 -->
+
+    <a href="/members/add" class="add-member">新增会员</a>
+
+    <!-- 表格展示会员列表 -->
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>电话</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="member : ${members}">
+            <td th:text="${member.id}"></td>
+            <td th:text="${member.name}"></td>
+            <td th:text="${member.email}"></td>
+            <td th:text="${member.phone}"></td>
+            <!-- 只改这里：如果 status 字段等于 "active"，显示“有效”，否则显示“无效” -->
+            <td th:text="${member.status == 'active' ? '有效' : '无效'}"></td>
+            <td class="action-buttons">
+                <a th:href="@{/members/edit/{id}(id=${member.id})}" class="edit">编辑</a>
+                <form th:action="@{/members/delete/{id}(id=${member.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="delete">删除</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${members.size() == 0}">
+            <td colspan="6" style="text-align:center;">暂无会员</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <div class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/members(page=${currentPage - 1})}">上一页</a>
+        <span>第 <span th:text="${currentPage}"></span> 页 / 共 <span th:text="${totalPages}"></span> 页</span>
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/members(page=${currentPage + 1})}">下一页</a>
+    </div>
+</div>
+
+<!-- 弹出框 -->
+<div class="alert" id="alert"></div>
+
+<script>
+    // 模拟弹出框提示操作成功
+    function showAlert(message, type = 'success') {
+        const alertBox = document.getElementById('alert');
+        alertBox.textContent = message;
+        alertBox.className = `alert show ${type === 'error' ? 'error' : ''}`;
+        setTimeout(() => {
+            alertBox.className = 'alert';
+        }, 3000);
+    }
+
+    // 示例：删除后调用
+    // showAlert('删除成功！');
+</script>
+</body>
+</html>

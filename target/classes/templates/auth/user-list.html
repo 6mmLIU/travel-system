@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User List</title>
+</head>
+<body>
+<h1>User List</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Nickname</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.nickname}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <span>Page:</span>
+    <span th:text="${currentPage}"></span>/<span th:text="${totalPages}"></span>
+</div>
+<div>
+    <a th:href="@{/users/all(page=${currentPage - 1}, size=${pageSize}, sortField=${sortField}, sortDirection=${sortDirection})}"
+       th:if="${currentPage > 1}">Previous</a>
+    <a th:href="@{/users/all(page=${currentPage + 1}, size=${pageSize}, sortField=${sortField}, sortDirection=${sortDirection})}"
+       th:if="${currentPage < totalPages}">Next</a>
+</div>
+
+<p th:if="${error}" style="color: red;" th:text="${error}"></p>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>旅游线路管理</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        form .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        form .form-group label {
+            flex: 0 0 150px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        form .form-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        form button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        form button:hover {
+            background: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+
+        table th {
+            background: #007bff;
+            color: #ffffff;
+        }
+
+        table td {
+            color: #495057;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-buttons form {
+            margin: 0;
+        }
+
+        .action-buttons button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .publish {
+            background: #28a745;
+        }
+
+        .publish:hover {
+            background: #218838;
+        }
+
+        .unpublish {
+            background: #dc3545;
+        }
+
+        .unpublish:hover {
+            background: #c82333;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pagination a, .pagination span {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .pagination a {
+            background: #007bff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .pagination a:hover {
+            background: #0056b3;
+        }
+
+        .pagination span {
+            background: #e9ecef;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+<h1>旅游线路管理</h1>
+
+<div class="container">
+    <!-- 筛选表单 -->
+    <form th:action="@{/tour-lines/filter}" method="get">
+        <div class="form-group">
+            <label for="destination">目的地：</label>
+            <input type="text" id="destination" name="destination" th:value="${destination}" placeholder="请输入目的地">
+        </div>
+        <div class="form-group">
+            <label for="minPrice">最低价格：</label>
+            <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" step="0.01" placeholder="最低价格">
+        </div>
+        <div class="form-group">
+            <label for="maxPrice">最高价格：</label>
+            <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" step="0.01" placeholder="最高价格">
+        </div>
+        <div class="form-group">
+            <label for="minDuration">最短时长：</label>
+            <input type="number" id="minDuration" name="minDuration" th:value="${minDuration}" placeholder="最短时长">
+        </div>
+        <div class="form-group">
+            <label for="maxDuration">最长时长：</label>
+            <input type="number" id="maxDuration" name="maxDuration" th:value="${maxDuration}" placeholder="最长时长">
+        </div>
+        <button type="submit">搜索</button>
+    </form>
+
+    <!-- 旅游线路表 -->
+    <table>
+        <thead>
+        <tr>
+            <th>描述</th>
+            <th>目的地</th>
+            <th>价格</th>
+            <th>时长（天）</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="line : ${tourLines}">
+            <td th:text="${line.title}"></td>
+            <td th:text="${line.destination}"></td>
+            <td th:text="${line.price}"></td>
+            <td th:text="${line.duration}"></td>
+            <td th:text="${line.published ? '上架' : '下架'}"></td>
+            <td class="action-buttons">
+                <!-- 发布按钮 -->
+                <form th:action="@{/tour-lines/publish/{id}(id=${line.id})}" method="post">
+                    <button type="submit" class="publish" th:disabled="${line.published}">上架</button>
+                </form>
+                <!-- 下架按钮 -->
+                <form th:action="@{/tour-lines/unpublish/{id}(id=${line.id})}" method="post">
+                    <button type="submit" class="unpublish" th:disabled="${!line.published}">下架</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${tourLines.size() == 0}">
+            <td colspan="6">暂无旅游线路</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <div class="pagination">
+        <a th:href="@{/tour-lines/all(page=${currentPage - 1}, size=${size})}" th:if="${currentPage > 1}">上一页</a>
+        <span>第 <span th:text="${currentPage}"></span> 页，共 <span th:text="${totalPages}"></span> 页</span>
+        <a th:href="@{/tour-lines/all(page=${currentPage + 1}, size=${size})}" th:if="${currentPage < totalPages}">下一页</a>
+    </div>
+</div>
+</body>
+</html>

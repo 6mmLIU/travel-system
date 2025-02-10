@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>主界面</title>
+    <!-- 引入微软雅黑字体（系统字体，无需额外引入） -->
+    <style>
+        :root {
+            --primary-color: #0d6efd; /* 科技蓝 */
+            --button-text-color: var(--primary-color);
+            --button-bg-color: #e8e8e8;
+            --button-border-color: var(--primary-color);
+            --button-hover-shadow: 1px 1px 100px var(--primary-color);
+            --button-active-text-color: #666;
+            --circle-opacity: 0.3;
+            --circle-blur-large: 150px;
+            --circle-blur-medium: 120px;
+            --circle-blur-small: 90px;
+
+            --button-height: 35px;
+            --button-width: 120px;
+            --button-gap: 12px;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", "SimHei", sans-serif;
+            /* 只保留纯图片背景 */
+            background: url("/images/background.jpg") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            color: #333;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+            width: 100%;
+            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+        }
+        .navbar .title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary-color);
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: var(--button-gap);
+        }
+
+        /* 通用按钮样式 */
+        .button {
+            height: var(--button-height);
+            width: var(--button-width);
+            position: relative;
+            background-color: transparent;
+            cursor: pointer;
+            border: 2px solid var(--button-border-color);
+            overflow: hidden;
+            border-radius: 25px;
+            color: var(--button-text-color);
+            transition: all 0.3s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-family: "Microsoft YaHei", "微软雅黑", "SimHei", sans-serif;
+            font-size: 14px;
+            padding: 0 8px;
+        }
+        .button:hover {
+            box-shadow: var(--button-hover-shadow);
+            color: #fff;
+            background-color: var(--primary-color);
+        }
+
+        /* 容器：左右布局 */
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .left-panel {
+            width: 60%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid rgba(200, 200, 200, 0.3);
+            border-radius: 10px;
+            background-color: rgba(250, 250, 250, 0.9);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 右侧面板 */
+        .right-panel {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 上下模块之间留间隙 */
+        }
+
+        /* 欢迎板块 */
+        .welcome-panel {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #333;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        /* 旅游线路介绍区 */
+        .tour-line-intro {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tour-line-intro h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .tour-line-intro p {
+            line-height: 1.6;
+            color: #666;
+        }
+        .search-form {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .search-input {
+            width: 70%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .search-button {
+            height: 35px;
+            margin-left: 8px;
+            padding: 0 15px;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .search-button:hover {
+            background-color: #0a58ca;
+        }
+
+        /* 已发布线路表格 */
+        .published-lines {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            color: #333;
+        }
+        .published-lines h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .published-lines table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .published-lines th, .published-lines td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .published-lines th {
+            background-color: #f5f5f5;
+        }
+    </style>
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+</head>
+<body>
+<!-- 导航栏 -->
+<div class="navbar">
+    <div class="title">旅游管理系统</div>
+    <div class="nav-links">
+        <a href="/tour-lines/all" class="button" aria-label="线路管理">线路管理</a>
+        <a href="/members" class="button" aria-label="会员管理">会员管理</a>
+    </div>
+</div>
+
+<!-- 页面内容 -->
+<div class="container">
+    <!-- 左侧图表 -->
+    <div class="left-panel">
+        <h2>路线可视化图表 - 柱状图</h2>
+        <div id="main-chart" class="chart-container"></div>
+
+        <!-- 旅游线路介绍 -->
+        <div class="tour-line-intro">
+            <h2>旅游线路介绍</h2>
+            <p>
+                欢迎来到我们的旅游线路介绍专区，这里精心为你挑选了丰富多样的目的地，
+                无论你想去海边冲浪还是想去山间漫步，都可以在这里找到最适合你的那条线路。
+            </p>
+            <p>
+                我们的线路涵盖了文化探秘、自然风光、城市观光、美食之旅等多种主题，让你的每一次出行都能收获独特的体验。
+            </p>
+        </div>
+
+        <!-- 搜索功能 -->
+        <div class="search-form">
+            <form action="/tour-lines/search" method="get">
+                <input type="text" class="search-input" name="keyword" placeholder="请输入关键字搜索旅游线路..." />
+                <button type="submit" class="search-button">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 右侧面板 -->
+    <div class="right-panel">
+        <div class="welcome-panel">
+            <h1>欢迎回来, 用户!</h1>
+            <p>登录成功！</p>
+        </div>
+
+        <div class="published-lines" th:if="${publishedLines != null and publishedLines.size() > 0}">
+            <h3>已发布的旅游线路：</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>线路名称</th>
+                    <th>目的地</th>
+                    <th>价格</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="line : ${publishedLines}">
+                    <td th:text="${line.title}">线路名称</td>
+                    <td th:text="${line.destination}">目的地</td>
+                    <td th:text="${line.price}">价格</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>© 2025 旅游管理系统 | 关于我们</footer>
+    </div>
+</div>
+
+<!-- ECharts 初始化 -->
+<script>
+    var chart = echarts.init(document.getElementById('main-chart'));
+    var option = {
+        title: {
+            text: '各城市线路数',
+            subtext: '柱状图示例',
+            left: 'center',
+            textStyle: { color: '#333' },
+            subtextStyle: { color: '#777' }
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            type: 'category',
+            data: [],
+            axisLabel: { color: '#333' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: '#333' }
+        },
+        series: [
+            {
+                name: '线路数',
+                type: 'bar',
+                data: [],
+                itemStyle: {
+                    color: '#66ccff'
+                }
+            }
+        ]
+    };
+
+    chart.setOption(option);
+
+    fetch('/api/charts/city-count')
+        .then(response => response.json())
+        .then(data => {
+            const xData = data.map(item => item.city);
+            const yData = data.map(item => item.count);
+
+            chart.setOption({
+                xAxis: { data: xData },
+                series: [{ data: yData }]
+            });
+        })
+        .catch(error => {
+            console.error('获取图表数据失败:', error);
+        });
+</script>
+</body>
+</html>

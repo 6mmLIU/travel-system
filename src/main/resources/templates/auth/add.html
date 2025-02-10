@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>新增会员</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>新增会员</h1>
+    <form th:action="@{/members/add}" method="post">
+        <label>姓名：
+            <input type="text" name="name" placeholder="请输入姓名" required>
+        </label>
+        <label>邮箱：
+            <input type="email" name="email" placeholder="请输入邮箱" required>
+        </label>
+        <label>电话：
+            <input type="text" name="phone" placeholder="请输入电话">
+        </label>
+        <label>状态：
+            <select name="status">
+                <option value="ACTIVE">有效</option>
+                <option value="INACTIVE">无效</option>
+            </select>
+        </label>
+        <button type="submit">提交</button>
+    </form>
+    <a href="/members" class="back-link">返回会员列表</a>
+</div>
+</body>
+</html>

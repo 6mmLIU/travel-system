@@ -1,0 +1,16 @@
+/* 设置全局背景图片 */
+body {
+    margin: 0;
+    padding: 0;
+    background: url("../images/background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+/* 让所有页面的主要内容居中 */
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

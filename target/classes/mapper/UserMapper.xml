@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.travelsystem.mapper.UserMapper">
+
+    <insert id="insertUser" parameterType="com.example.travelsystem.model.User">
+        INSERT INTO user (username, password, role, nickname, email, created_at)
+        VALUES (#{username}, #{password}, #{role}, #{nickname}, #{email}, #{createdAt})
+    </insert>
+
+    <select id="findByUsername" parameterType="string" resultType="com.example.travelsystem.model.User">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <select id="findById" parameterType="int" resultType="com.example.travelsystem.model.User">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <update id="updateUser" parameterType="com.example.travelsystem.model.User">
+        UPDATE user
+        SET nickname = #{nickname},
+            email = #{email},
+            role = #{role},
+            created_at = #{createdAt}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE user
+        SET password = #{password}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+
+    <select id="countUsers" resultType="int">
+        SELECT COUNT(*) FROM user
+    </select>
+
+    <select id="findAll" resultType="com.example.travelsystem.model.User">
+        SELECT * FROM user
+        ORDER BY ${sortField} ${sortDirection}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+</mapper>

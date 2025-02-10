@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        p {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            color: #2ecc71;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            input[type="text"], input[type="password"] {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h1>用户登录</h1>
+    <form th:action="@{/users/login}" method="post">
+        <label for="username">用户名：</label>
+        <input type="text" id="username" name="username" placeholder="请输入您的用户名" required>
+
+        <label for="password">密码：</label>
+        <input type="password" id="password" name="password" placeholder="请输入您的密码" required>
+
+        <button type="submit">登录</button>
+    </form>
+    <p th:if="${error}" th:text="${error}" class="error"></p>
+    <p th:if="${message}" th:text="${message}" class="message"></p>
+
+    <div class="form-footer">
+        <p>还没有账号？<a th:href="@{/users/register}">立即注册</a></p>
+    </div>
+</div>
+</body>
+</html>

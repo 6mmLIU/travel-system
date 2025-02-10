@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.travelsystem.mapper.TourLineMapper">
+
+    <!-- 添加旅游线路 -->
+    <insert id="insertTourLine">
+        INSERT INTO tour_line (title, description, destination, price, duration)
+        VALUES (#{title}, #{description}, #{destination}, #{price}, #{duration})
+    </insert>
+
+    <!-- 按目的地搜索旅游线路 -->
+    <select id="findByDestination" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line WHERE destination LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <!-- 分页获取所有线路 -->
+    <select id="findAll" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line ORDER BY created_at DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 上架旅游线路 -->
+    <update id="publishTourLine">
+        UPDATE tour_line SET status = 1 WHERE id = #{id}
+    </update>
+
+    <!-- 下架旅游线路 -->
+    <update id="unpublishTourLine">
+        UPDATE tour_line SET status = 0 WHERE id = #{id}
+    </update>
+
+    <!-- 获取所有已上架的旅游线路 -->
+    <select id="findAllPublished" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line WHERE status = 1
+    </select>
+
+    <!-- 按条件筛选旅游线路 -->
+    <select id="filterTourLines" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line
+        <where>
+            status = 1
+            <if test="destination != null and destination.trim() != ''">
+                AND destination LIKE CONCAT('%', #{destination}, '%')
+            </if>
+            <if test="minPrice != null">
+                AND price <![CDATA[>=]]> #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND price <![CDATA[<=]]> #{maxPrice}
+            </if>
+            <if test="minDuration != null">
+                AND duration <![CDATA[>=]]> #{minDuration}
+            </if>
+            <if test="maxDuration != null">
+                AND duration <![CDATA[<=]]> #{maxDuration}
+            </if>
+        </where>
+        <if test="sortField != null and sortDirection != null">
+            ORDER BY ${sortField} ${sortDirection}
+        </if>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 根据 ID 获取线路详情 -->
+    <select id="findById" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line WHERE id = #{id}
+    </select>
+
+</mapper>

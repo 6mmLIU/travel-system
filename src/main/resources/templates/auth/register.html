@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户注册</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f9fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .message.error {
+            color: red;
+        }
+
+        .message.success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>用户注册</h1>
+    <form action="/users/register" method="post">
+        <label for="username">用户名：</label>
+        <input type="text" id="username" name="username" required placeholder="请输入用户名">
+
+        <label for="password">密码：</label>
+        <input type="password" id="password" name="password" required placeholder="请输入密码">
+
+        <label for="nickname">昵称：</label>
+        <input type="text" id="nickname" name="nickname" placeholder="请输入昵称（可选）">
+
+        <label for="email">邮箱：</label>
+        <input type="email" id="email" name="email" placeholder="请输入邮箱（可选）">
+
+        <button type="submit">注册</button>
+    </form>
+    <!-- 错误提示信息 -->
+    <p th:if="${error != null}" th:text="${error}" class="message error"></p>
+    <!-- 成功提示信息 -->
+    <p th:if="${message != null}" th:text="${message}" class="message success"></p>
+</div>
+</body>
+</html>

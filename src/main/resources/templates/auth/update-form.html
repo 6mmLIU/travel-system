@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>更新资料</title>
+    <style>
+        /* 1. 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* 高端叠加渐变背景 */
+            background: linear-gradient(135deg, #ffffff 25%, #f0f0f0 50%, #e0eaff 75%);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* 防止装饰圆形溢出 */
+            position: relative;
+        }
+
+        /* 渐变动画 */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 2. 容器样式 */
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            background: #ffffff; /* 白色背景 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            position: relative;
+            z-index: 2; /* 确保容器在装饰圆形之上 */
+        }
+
+        /* 3. 标题样式 */
+        h1 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* 4. 表单样式 */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 输入组样式 */
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #555555;
+            transition: color 0.3s ease;
+        }
+
+        .input {
+            width: 100%;
+            height: 40px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 0 1rem;
+            border: 1px solid #cccccc;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .input:hover,
+        .input:focus,
+        .input-group:hover .input {
+            outline: none;
+            border-color: #007bff;
+            background-color: #ffffff;
+        }
+
+        .input-group:hover .label,
+        .input:focus + .label {
+            color: #007bff;
+        }
+
+        /* 按钮样式 */
+        button {
+            color: #090909; /* 黑色文字 */
+            padding: 0.7em 1.7em;
+            font-size: 18px;
+            border-radius: 0.5em;
+            background: #e8e8e8; /* 浅灰色背景 */
+            cursor: pointer;
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s;
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff; /* 立体感增强 */
+            align-self: center;
+        }
+
+        button:hover {
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            /* 可选：在悬停时添加其他效果，如颜色变化 */
+        }
+
+        button:active {
+            color: #666; /* 点击时文字颜色变浅 */
+            box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff; /* 内凹阴影 */
+            background: #e8e8e8; /* 保持背景色不变 */
+            transform: scale(0.95); /* 点击时略微缩小 */
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        /* 信息提示样式 */
+        p {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        p[th\:if="${error}"] {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        p[th\:if="${message}"] {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* 装饰圆形样式 */
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            pointer-events: none; /* 防止遮挡表单元素 */
+            z-index: 1;
+            transition: transform 0.2s ease;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .input {
+                height: 38px;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 0.6em 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 装饰圆形元素 -->
+<div class="decorative-circle" style="width: 200px; height: 200px; background: #ffecd2; top: -50px; left: -50px; filter: blur(100px);"></div>
+<div class="decorative-circle" style="width: 300px; height: 300px; background: #fcb69f; top: 70%; left: -100px; filter: blur(150px);"></div>
+<div class="decorative-circle" style="width: 250px; height: 250px; background: #ff9a9e; top: 20%; right: -80px; filter: blur(120px);"></div>
+<div class="decorative-circle" style="width: 180px; height: 180px; background: #a18cd1; bottom: -60px; right: 30px; filter: blur(90px);"></div>
+
+<div class="container">
+    <h1>更新资料</h1>
+    <form th:action="@{/users/update}" th:object="${user}" method="post">
+        <input type="hidden" name="id" th:value="*{id}">
+
+        <!-- 昵称输入组 -->
+        <div class="input-group">
+            <label for="nickname" class="label">昵称：</label>
+            <input type="text" id="nickname" name="nickname" th:field="*{nickname}"
+                   class="input" placeholder="请输入新的昵称" required>
+        </div>
+
+        <!-- 用户名输入组 -->
+        <div class="input-group">
+            <label for="username" class="label">用户名：</label>
+            <input type="text" id="username" name="username" th:field="*{username}"
+                   class="input" placeholder="请输入新的用户名">
+        </div>
+
+        <!-- 邮箱输入组 -->
+        <div class="input-group">
+            <label for="email" class="label">邮箱：</label>
+            <input type="email" id="email" name="email" th:field="*{email}"
+                   class="input" placeholder="请输入新的邮箱">
+        </div>
+
+        <button type="submit">更新</button>
+    </form>
+
+    <p th:if="${error}" th:text="${error}"></p>
+    <p th:if="${message}" th:text="${message}"></p>
+</div>
+
+<!-- JavaScript 实现装饰圆形跟随鼠标移动 -->
+<script>
+    // 获取所有装饰圆形元素
+    const circles = document.querySelectorAll('.decorative-circle');
+
+    // 监听鼠标移动事件
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        circles.forEach((circle, index) => {
+            // 计算不同圆形的移动比例，制造层次感
+            const moveFactor = (index + 1) / circles.length;
+
+            const translateX = (mouseX - window.innerWidth / 2) * moveFactor * 0.02;
+            const translateY = (mouseY - window.innerHeight / 2) * moveFactor * 0.02;
+
+            circle.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        });
+    });
+</script>
+</body>
+</html>
