@@ -62,7 +62,12 @@ TravelSystem/
 ```sql
 CREATE DATABASE travelsystem;
 ```
-然后修改 `application.yml` 里的数据库配置，确保 `spring.datasource.url` 指向 `jdbc:mysql://localhost:3307/travelsystem`。
+接着在数据库中执行根目录下的 `travelsystem.sql`，创建所需的表：
+
+```sh
+mysql -u root -p travelsystem < travelsystem.sql
+```
+修改 `application.yml` 中的数据库配置，确保 `spring.datasource.url` 指向 `jdbc:mysql://localhost:3307/travelsystem`。
 
 ### 2. 运行项目
 ```sh
