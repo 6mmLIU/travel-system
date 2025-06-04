@@ -21,6 +21,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TourLineService tourLineService;
+
     @Override
     public void register(User user) {
         // 注册时可以对 createdAt 设置一个当前时间
@@ -95,8 +98,7 @@ public class UserServiceImpl implements UserService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid TourLine ID");
         }
-        TourLineService tourLineMapper = null;
-        tourLineMapper.publishTourLine(id);
+        tourLineService.publishTourLine(id);
     }
 
     @Override
@@ -104,8 +106,7 @@ public class UserServiceImpl implements UserService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid TourLine ID");
         }
-        TourLineService tourLineMapper = null;
-        tourLineMapper.unpublishTourLine(id);
+        tourLineService.unpublishTourLine(id);
     }
 
 }
