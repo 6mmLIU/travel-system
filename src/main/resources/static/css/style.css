@@ -7,10 +7,102 @@ body {
     font-family: "Microsoft YaHei", sans-serif;
 }
 
+body.auth-page {
+    background: #f4f7fa;
+}
+
 /* 让所有页面的主要内容居中 */
 .main-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+/* 登录/注册等表单页面样式 */
+.auth-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-container h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.auth-container label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.auth-container input[type="text"],
+.auth-container input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.auth-container input[type="text"]:focus,
+.auth-container input[type="password"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    outline: none;
+}
+
+.auth-container button {
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-container button:hover {
+    background-color: #2980b9;
+}
+
+.auth-container .error {
+    color: #e74c3c;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.auth-container .message {
+    color: #2ecc71;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.auth-container .form-footer {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.auth-container .form-footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.auth-container .form-footer a:hover {
+    text-decoration: underline;
 }
