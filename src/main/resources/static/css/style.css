@@ -7,7 +7,7 @@ body {
     font-family: "Microsoft YaHei", sans-serif;
 }
 
-body.login-page {
+body.auth-page {
     background: #f4f7fa;
 }
 
@@ -19,8 +19,8 @@ body.login-page {
     height: 100vh;
 }
 
-/* 登录页样式 */
-.login-container {
+/* 登录/注册等表单页面样式 */
+.auth-container {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 30px 40px;
     border-radius: 15px;
@@ -30,13 +30,13 @@ body.login-page {
     max-width: 400px;
 }
 
-.login-container h1 {
+.auth-container h1 {
     color: #2c3e50;
     margin-bottom: 20px;
     font-size: 24px;
 }
 
-.login-container label {
+.auth-container label {
     display: block;
     text-align: left;
     margin-bottom: 8px;
@@ -45,8 +45,8 @@ body.login-page {
     font-size: 14px;
 }
 
-.login-container input[type="text"],
-.login-container input[type="password"] {
+.auth-container input[type="text"],
+.auth-container input[type="password"] {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -57,14 +57,14 @@ body.login-page {
     transition: all 0.3s ease;
 }
 
-.login-container input[type="text"]:focus,
-.login-container input[type="password"]:focus {
+.auth-container input[type="text"]:focus,
+.auth-container input[type="password"]:focus {
     border-color: #3498db;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
     outline: none;
 }
 
-.login-container button {
+.auth-container button {
     width: 100%;
     background-color: #3498db;
     color: white;
@@ -77,32 +77,32 @@ body.login-page {
     transition: background-color 0.3s ease;
 }
 
-.login-container button:hover {
+.auth-container button:hover {
     background-color: #2980b9;
 }
 
-.login-container .error {
+.auth-container .error {
     color: #e74c3c;
     margin-top: -10px;
     margin-bottom: 10px;
 }
 
-.login-container .message {
+.auth-container .message {
     color: #2ecc71;
     margin-top: -10px;
     margin-bottom: 10px;
 }
 
-.login-container .form-footer {
+.auth-container .form-footer {
     margin-top: 20px;
     font-size: 14px;
 }
 
-.login-container .form-footer a {
+.auth-container .form-footer a {
     color: #3498db;
     text-decoration: none;
 }
 
-.login-container .form-footer a:hover {
+.auth-container .form-footer a:hover {
     text-decoration: underline;
 }
