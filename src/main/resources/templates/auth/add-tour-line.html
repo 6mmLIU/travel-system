@@ -1,92 +1,110 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
+    <meta charset="UTF-8">
     <title>添加旅游线路</title>
     <style>
+        /* 通用 */
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background-color: #f0f8ff; /* AliceBlue */
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
         }
-
         h1 {
             text-align: center;
-            color: #343a40;
-            margin-top: 20px;
+            color: #fff;
+            margin: 0;
+            padding: 20px 0;
+            background: linear-gradient(90deg, #0066cc 0%, #3399ff 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        form {
-            margin: 20px auto;
-            padding: 20px;
-            width: 80%;
-            max-width: 500px;
-            background: #ffffff;
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,102,204,0.1);
         }
 
+        /* 表单 */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
         form label {
-            display: block;
+            margin-top: 15px;
             margin-bottom: 5px;
+            color: #333;
             font-weight: bold;
-            color: #495057;
         }
-
-        form input, form textarea, form button {
-            width: 100%;
+        form input,
+        form textarea {
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
+            border: 1px solid #6699cc;
+            border-radius: 4px;
             font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
         }
-
+        form input:focus,
+        form textarea:focus {
+            border-color: #3399ff;
+        }
         form textarea {
             resize: vertical;
             height: 100px;
         }
-
         form button {
+            margin-top: 20px;
+            padding: 12px;
             background: #007bff;
-            color: #ffffff;
+            color: #fff;
             border: none;
-            cursor: pointer;
+            border-radius: 4px;
             font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
-
         form button:hover {
             background: #0056b3;
         }
 
-        p {
+        /* 提示信息 */
+        p.message {
             text-align: center;
-            color: green;
+            color: #1cc88a;
             font-weight: bold;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 <h1>添加旅游线路</h1>
-<form th:action="@{/tour-lines/add}" method="post">
-    <label for="title">标题：</label>
-    <input type="text" id="title" name="title" placeholder="请输入线路标题" required>
+<div class="container">
+    <form th:action="@{/tour-lines/add}" th:object="${tourLine}" method="post">
+        <label for="title">标题：</label>
+        <input type="text" id="title" th:field="*{title}" placeholder="请输入线路标题" required />
 
-    <label for="description">描述：</label>
-    <textarea id="description" name="description" placeholder="请输入线路描述"></textarea>
+        <label for="description">线路介绍：</label>
+        <textarea id="description"
+                  th:field="*{description}"
+                  placeholder="请输入线路的详细介绍"></textarea>
 
-    <label for="destination">目的地：</label>
-    <input type="text" id="destination" name="destination" placeholder="请输入目的地" required>
+        <label for="destination">目的地：</label>
+        <input type="text" id="destination" th:field="*{destination}" placeholder="请输入目的地" required />
 
-    <label for="price">价格：</label>
-    <input type="number" id="price" name="price" step="0.01" placeholder="请输入价格" required>
+        <label for="price">价格：</label>
+        <input type="number" id="price" th:field="*{price}" step="0.01" placeholder="请输入价格" required />
 
-    <label for="duration">时长（天）：</label>
-    <input type="number" id="duration" name="duration" placeholder="请输入时长" required>
+        <label for="duration">时长（天）：</label>
+        <input type="number" id="duration" th:field="*{duration}" placeholder="请输入时长" required />
 
-    <button type="submit">提交</button>
-</form>
-<p th:if="${message}" th:text="${message}"></p>
+        <button type="submit">提交</button>
+    </form>
+    <p class="message" th:if="${message}" th:text="${message}"></p>
+</div>
 </body>
 </html>

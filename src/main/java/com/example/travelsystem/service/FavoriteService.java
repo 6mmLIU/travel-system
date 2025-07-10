@@ -1,5 +1,7 @@
 package com.example.travelsystem.service;
 
+import com.example.travelsystem.model.TourLine;
+
 import java.util.List;
 
 public interface FavoriteService {
@@ -15,4 +17,6 @@ public interface FavoriteService {
 
     // 判断是否收藏
     boolean isFavorite(Integer userId, Integer tourLineId);
+
+    List<TourLine> listFavorites(Integer id);
 }

@@ -29,4 +29,11 @@ public interface TourLineService {
     List<TourLine> getAllTourLinesNoPaging();
 
     int getTotalRecords(); // 新增：获取总记录数
+
+    int countFilter(String destination, Double minPrice, Double maxPrice,
+                    Integer minDuration, Integer maxDuration);
+
+    List<TourLine> getFavoritesByUser(Integer id);
+
+    boolean toggleFavorite(Integer id, Integer lineId);
 }

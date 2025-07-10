@@ -36,11 +36,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             role = "USER";
         }
 
-        // 使用 Spring Security 提供的便捷构造器
+        // —— 关键变动：使用 .roles(role) 而不是 .authorities(role)
+        //    .roles(...) 会自动在前面加上 "ROLE_"，比如传 "ADMIN" 就得到 "ROLE_ADMIN"
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())  // 数据库里的已加密密码
-                .authorities(role)
+                .roles(role)                   // ← 这里改动
                 .build();
     }
 }

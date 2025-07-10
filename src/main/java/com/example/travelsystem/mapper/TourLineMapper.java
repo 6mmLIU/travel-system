@@ -35,10 +35,17 @@ public interface TourLineMapper {
     TourLine findById(Integer id);
 
     // 新增方法：获取所有线路（不分页）
-    @Select("SELECT * FROM tour_line ORDER BY created_at DESC")
+
     List<TourLine> findAllNoPaging();
 
     // 新增方法：获取总记录数
-    @Select("SELECT COUNT(*) FROM tour_line")
+
     int countAll();
+
+    int countFilter(@Param("destination") String destination, @Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice, @Param("minDuration") Integer minDuration, @Param("maxDuration") Integer maxDuration);
+
+
+    void publishById(@Param("id") Integer id);
+
+    void unpublishById(@Param("id") Integer id);
 }

@@ -1,70 +1,127 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.example.travelsystem.mapper.TourLineMapper">
 
-    <!-- 添加旅游线路 -->
-    <insert id="insertTourLine">
-        INSERT INTO tour_line (title, description, destination, price, duration)
-        VALUES (#{title}, #{description}, #{destination}, #{price}, #{duration})
+    <!-- 1. 新增线路 insertTourLine -->
+    <insert id="insertTourLine" parameterType="com.example.travelsystem.model.TourLine"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tour_line
+            (title, destination, price, duration, description, status, created_at)
+        VALUES (#{title}, #{destination}, #{price}, #{duration}, #{description},
+                #{status}, NOW())
     </insert>
 
-    <!-- 按目的地搜索旅游线路 -->
-    <select id="findByDestination" resultType="com.example.travelsystem.model.TourLine">
-        SELECT * FROM tour_line WHERE destination LIKE CONCAT('%', #{keyword}, '%')
-    </select>
-
-    <!-- 分页获取所有线路 -->
-    <select id="findAll" resultType="com.example.travelsystem.model.TourLine">
-        SELECT * FROM tour_line ORDER BY created_at DESC LIMIT #{offset}, #{limit}
-    </select>
-
-    <!-- 上架旅游线路 -->
-    <update id="publishTourLine">
-        UPDATE tour_line SET status = 1 WHERE id = #{id}
-    </update>
-
-    <!-- 下架旅游线路 -->
-    <update id="unpublishTourLine">
-        UPDATE tour_line SET status = 0 WHERE id = #{id}
-    </update>
-
-    <!-- 获取所有已上架的旅游线路 -->
-    <select id="findAllPublished" resultType="com.example.travelsystem.model.TourLine">
-        SELECT * FROM tour_line WHERE status = 1
-    </select>
-
-    <!-- 按条件筛选旅游线路 -->
-    <select id="filterTourLines" resultType="com.example.travelsystem.model.TourLine">
+    <!-- 2. 关键字搜索 findByDestination -->
+    <select id="findByDestination" parameterType="string"
+            resultType="com.example.travelsystem.model.TourLine">
         SELECT * FROM tour_line
-        <where>
-            status = 1
-            <if test="destination != null and destination.trim() != ''">
-                AND destination LIKE CONCAT('%', #{destination}, '%')
-            </if>
-            <if test="minPrice != null">
-                AND price <![CDATA[>=]]> #{minPrice}
-            </if>
-            <if test="maxPrice != null">
-                AND price <![CDATA[<=]]> #{maxPrice}
-            </if>
-            <if test="minDuration != null">
-                AND duration <![CDATA[>=]]> #{minDuration}
-            </if>
-            <if test="maxDuration != null">
-                AND duration <![CDATA[<=]]> #{maxDuration}
-            </if>
-        </where>
-        <if test="sortField != null and sortDirection != null">
-            ORDER BY ${sortField} ${sortDirection}
-        </if>
+        WHERE destination LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 3. 分页查询 findAll -->
+    <select id="findAll" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line
+        ORDER BY created_at DESC
         LIMIT #{offset}, #{limit}
     </select>
 
-    <!-- 根据 ID 获取线路详情 -->
-    <select id="findById" resultType="com.example.travelsystem.model.TourLine">
+    <!-- 4. 上下架：数字状态 -->
+    <update id="publishTourLine" parameterType="int">
+        UPDATE tour_line
+        SET status = 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="unpublishTourLine" parameterType="int">
+        UPDATE tour_line
+        SET status = 0
+        WHERE id = #{id}
+    </update>
+
+    <!-- 兼容 ServiceImpl 直接调用 publishById / unpublishById -->
+    <update id="publishById" parameterType="int">
+        UPDATE tour_line
+        SET status = 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="unpublishById" parameterType="int">
+        UPDATE tour_line
+        SET status = 0
+        WHERE id = #{id}
+    </update>
+
+    <!-- 5. 查询所有已发布线路（status = 1） -->
+    <select id="findAllPublished" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line
+        WHERE status = 1
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 6. 复杂筛选 + 分页 -->
+    <select id="filterTourLines" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line
+        <where>
+            <if test="destination != null and destination != ''">
+                AND destination LIKE CONCAT('%', #{destination}, '%')
+            </if>
+            <if test="minPrice != null">
+                AND price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND price &lt;= #{maxPrice}
+            </if>
+            <if test="minDuration != null">
+                AND duration &gt;= #{minDuration}
+            </if>
+            <if test="maxDuration != null">
+                AND duration &lt;= #{maxDuration}
+            </if>
+        </where>
+        ORDER BY ${sortField} ${sortDirection}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 7. countFilter：与上面 where 条件一致 -->
+    <select id="countFilter" resultType="int">
+        SELECT COUNT(*) FROM tour_line
+        <where>
+            <if test="destination != null and destination != ''">
+                AND destination LIKE CONCAT('%', #{destination}, '%')
+            </if>
+            <if test="minPrice != null">
+                AND price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND price &lt;= #{maxPrice}
+            </if>
+            <if test="minDuration != null">
+                AND duration &gt;= #{minDuration}
+            </if>
+            <if test="maxDuration != null">
+                AND duration &lt;= #{maxDuration}
+            </if>
+        </where>
+    </select>
+
+    <!-- 8. 根据 ID 查询详情 -->
+    <select id="findById" parameterType="int"
+            resultType="com.example.travelsystem.model.TourLine">
         SELECT * FROM tour_line WHERE id = #{id}
+    </select>
+
+    <!-- 9. 无分页列表 findAllNoPaging -->
+    <select id="findAllNoPaging" resultType="com.example.travelsystem.model.TourLine">
+        SELECT * FROM tour_line ORDER BY created_at DESC
+    </select>
+
+    <!-- 10. 记录总数 countAll -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM tour_line
     </select>
 
 </mapper>

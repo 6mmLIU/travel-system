@@ -1,104 +1,107 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
+    <meta charset="UTF-8">
     <title>用户注册</title>
     <style>
+        /* 通用 */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f9fc;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background-color: #f0f8ff; /* AliceBlue */
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
+        /* 顶部标题 */
         h1 {
-            font-size: 24px;
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            color: #fff;
+            margin: 0;
+            padding: 20px 0;
+            background: linear-gradient(90deg, #0066cc 0%, #3399ff 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
+        /* 容器 */
+        .container {
+            width: 90%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,102,204,0.1);
+        }
+        /* 表单标签 */
         form label {
-            display: block;
+            margin-top: 15px;
             margin-bottom: 5px;
-            font-weight: bold;
             color: #333;
+            font-weight: bold;
+            display: block;
         }
-
+        /* 输入框 */
         form input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #6699cc;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
             box-sizing: border-box;
         }
-
+        form input:focus {
+            border-color: #3399ff;
+            box-shadow: 0 0 5px rgba(51,153,255,0.5);
+        }
+        /* 按钮 */
         form button {
+            margin-top: 25px;
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
+            padding: 12px;
+            background: #007bff;
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
-
         form button:hover {
-            background-color: #0056b3;
+            background: #0056b3;
         }
-
+        /* 提示信息 */
         .message {
             text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
+            font-weight: bold;
+            margin-top: 15px;
         }
-
         .message.error {
-            color: red;
+            color: #e74a3c;
         }
-
         .message.success {
-            color: green;
+            color: #1cc88a;
         }
     </style>
 </head>
 <body>
+<h1>用户注册</h1>
 <div class="container">
-    <h1>用户注册</h1>
-    <form action="/users/register" method="post">
+    <form th:action="@{/users/register}" method="post">
         <label for="username">用户名：</label>
-        <input type="text" id="username" name="username" required placeholder="请输入用户名">
+        <input type="text" id="username" name="username" required placeholder="请输入用户名" />
 
         <label for="password">密码：</label>
-        <input type="password" id="password" name="password" required placeholder="请输入密码">
+        <input type="password" id="password" name="password" required placeholder="请输入密码" />
 
         <label for="nickname">昵称：</label>
-        <input type="text" id="nickname" name="nickname" placeholder="请输入昵称（可选）">
+        <input type="text" id="nickname" name="nickname" placeholder="请输入昵称（可选）" />
 
         <label for="email">邮箱：</label>
-        <input type="email" id="email" name="email" placeholder="请输入邮箱（可选）">
+        <input type="email" id="email" name="email" placeholder="请输入邮箱（可选）" />
 
         <button type="submit">注册</button>
     </form>
-    <!-- 错误提示信息 -->
     <p th:if="${error != null}" th:text="${error}" class="message error"></p>
-    <!-- 成功提示信息 -->
     <p th:if="${message != null}" th:text="${message}" class="message success"></p>
 </div>
 </body>

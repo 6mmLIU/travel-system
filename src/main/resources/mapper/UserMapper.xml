@@ -5,46 +5,105 @@
 
 <mapper namespace="com.example.travelsystem.mapper.UserMapper">
 
-    <insert id="insertUser" parameterType="com.example.travelsystem.model.User">
-        INSERT INTO user (username, password, role, nickname, email, created_at)
-        VALUES (#{username}, #{password}, #{role}, #{nickname}, #{email}, #{createdAt})
+    <!-- 1. 注册时插入新用户，回写自增主键 -->
+    <insert id="insert"
+            parameterType="com.example.travelsystem.model.User"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO `user`
+        (username,
+        password,
+        role,
+        nickname,
+        email,
+        created_at)
+        VALUES
+        (#{username},
+        #{password},
+        #{role},
+        #{nickname},
+        #{email},
+        #{registerTime})    <!-- 对应实体的 registerTime -->
     </insert>
 
-    <select id="findByUsername" parameterType="string" resultType="com.example.travelsystem.model.User">
-        SELECT * FROM user WHERE username = #{username}
+    <!-- 2. 根据用户名查询 -->
+    <select id="findByUsername"
+            parameterType="java.lang.String"
+            resultType="com.example.travelsystem.model.User">
+        SELECT
+        id,
+        username,
+        password,
+        role,
+        nickname,
+        email,
+        created_at AS registerTime  <!-- 映射到 registerTime -->
+        FROM `user`
+        WHERE username = #{username}
     </select>
 
-    <select id="findById" parameterType="int" resultType="com.example.travelsystem.model.User">
-        SELECT * FROM user WHERE id = #{id}
+    <!-- 3. 根据 ID 查询 -->
+    <select id="findById"
+            parameterType="java.lang.Integer"
+            resultType="com.example.travelsystem.model.User">
+        SELECT
+            id,
+            username,
+            password,
+            role,
+            nickname,
+            email,
+            created_at AS registerTime
+        FROM `user`
+        WHERE id = #{id}
     </select>
 
-    <update id="updateUser" parameterType="com.example.travelsystem.model.User">
-        UPDATE user
-        SET nickname = #{nickname},
-            email = #{email},
-            role = #{role},
-            created_at = #{createdAt}
+    <!-- 4. 更新用户可变字段 -->
+    <update id="updateProfile"
+            parameterType="com.example.travelsystem.model.User">
+        UPDATE `user`
+        SET
+            nickname = #{nickname},
+            email    = #{email},
+            role     = #{role}
         WHERE id = #{id}
     </update>
 
-    <update id="updatePassword">
-        UPDATE user
+    <!-- 5. 修改密码 -->
+    <update id="updatePassword"
+            parameterType="map">
+        UPDATE `user`
         SET password = #{password}
         WHERE id = #{id}
     </update>
 
-    <delete id="deleteUser" parameterType="int">
-        DELETE FROM user WHERE id = #{id}
+    <!-- 6. 删除用户 -->
+    <delete id="deleteById"
+            parameterType="java.lang.Integer">
+        DELETE FROM `user`
+        WHERE id = #{id}
     </delete>
 
-    <select id="countUsers" resultType="int">
-        SELECT COUNT(*) FROM user
+    <!-- 7. 统计用户总数 -->
+    <select id="count"
+            resultType="int">
+        SELECT COUNT(*) FROM `user`
     </select>
 
-    <select id="findAll" resultType="com.example.travelsystem.model.User">
-        SELECT * FROM user
-        ORDER BY ${sortField} ${sortDirection}
-        LIMIT #{offset}, #{limit}
+    <!-- 8. 分页查询所有用户 -->
+    <select id="findAllUsers"
+            resultType="com.example.travelsystem.model.User">
+        SELECT
+            id,
+            username,
+            password,
+            role,
+            nickname,
+            email,
+            created_at AS registerTime
+        FROM `user`
+        ORDER BY ${orderBy}
+        LIMIT #{offset}, #{size}
     </select>
 
 </mapper>

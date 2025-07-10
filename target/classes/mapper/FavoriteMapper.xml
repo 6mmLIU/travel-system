@@ -2,24 +2,36 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.example.travelsystem.mapper.FavoriteMapper">
 
-    <insert id="addFavorite">
+    <!-- 1. 添加收藏 -->
+    <insert id="addFavorite" parameterType="map">
         INSERT INTO favorite (user_id, tour_line_id)
         VALUES (#{userId}, #{tourLineId})
     </insert>
 
-    <delete id="removeFavorite">
-        DELETE FROM favorite WHERE user_id = #{userId} AND tour_line_id = #{tourLineId}
+    <!-- 2. 取消收藏 -->
+    <delete id="removeFavorite" parameterType="map">
+        DELETE FROM favorite
+        WHERE user_id = #{userId}
+          AND tour_line_id = #{tourLineId}
     </delete>
 
-    <select id="findFavoriteTourLinesByUserId" resultType="int">
-        SELECT tour_line_id FROM favorite WHERE user_id = #{userId}
+    <!-- 3. 查询某用户所有收藏线路 ID -->
+    <select id="findFavoriteTourLinesByUserId" resultType="int" parameterType="int">
+        SELECT tour_line_id
+        FROM favorite
+        WHERE user_id = #{userId}
     </select>
 
-    <select id="findByUserIdAndTourLineId" resultType="com.example.travelsystem.model.Favorite">
-        SELECT * FROM favorite WHERE user_id = #{userId} AND tour_line_id = #{tourLineId}
+    <!-- 4. 判断某条线路是否已被收藏 -->
+    <select id="findByUserIdAndTourLineId" resultType="com.example.travelsystem.model.Favorite" parameterType="map">
+        SELECT user_id       AS userId,
+        tour_line_id  AS tourLineId,
+        created_at    AS createdAt  <!-- 如果有这字段的话 -->
+        FROM favorite
+        WHERE user_id      = #{userId}
+        AND tour_line_id = #{tourLineId}
     </select>
 
 </mapper>

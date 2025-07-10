@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${line.title} + ' - 线路详情'">线路详情</title>
+  <style>
+    /* 整体背景 */
+    body {
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background-color: #f0f8ff; /* AliceBlue */
+      margin: 0;
+      padding: 30px 0;
+    }
+    /* 卡片容器 */
+    .card {
+      width: 90%;
+      max-width: 760px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,102,204,0.1);
+    }
+    /* 标题 */
+    h1 {
+      margin: 0 0 15px;
+      color: #0066cc;
+      font-size: 28px;
+    }
+    /* 元信息行 */
+    .meta {
+      margin-bottom: 20px;
+    }
+    .meta span {
+      display: inline-block;
+      margin-right: 20px;
+      color: #555;
+      font-size: 14px;
+    }
+    .price {
+      font-size: 20px;
+      color: #e55353;
+      font-weight: 700;
+      margin-left: 5px;
+    }
+    /* 收藏按钮 */
+    .btn-fav {
+      display: inline-block;
+      margin-bottom: 25px;
+      padding: 8px 16px;
+      border: 1px solid #0066cc;
+      border-radius: 20px;
+      background: #fff;
+      color: #0066cc;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-fav:hover {
+      background: #0066cc;
+      color: #fff;
+    }
+    /* 分割线 */
+    hr {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 25px 0;
+    }
+    /* 简介 */
+    h3 {
+      margin: 0 0 10px;
+      color: #333;
+      font-size: 18px;
+    }
+    .description {
+      color: #444;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    /* 返回按钮 */
+    .btn-back {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 8px 16px;
+      border-radius: 4px;
+      background: #007bff;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .btn-back:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <!-- 标题 -->
+  <h1 th:text="${line.title}">线路标题</h1>
+
+  <!-- 元信息 -->
+  <div class="meta">
+    <span>目的地：<b th:text="${line.destination}">目的地</b></span>
+    <span>时长：<b th:text="${line.duration}">0</b> 天</span>
+    <span>状态：<b th:text="${line.status=='PUBLISHED'?'已上架':'未上架'}"></b></span>
+    <span>价格：<span class="price" th:text="'¥' + ${line.price}">¥0.00</span></span>
+  </div>
+
+  <!-- 收藏/取消收藏 -->
+  <form th:action="@{|/users/favorites/${line.id}/toggle|}" method="post">
+    <button type="submit" class="btn-fav"
+            th:text="${favored} ? '取消收藏' : '收藏此线路'">收藏此线路</button>
+  </form>
+
+  <hr>
+
+  <!-- 线路简介 -->
+  <h3>线路简介</h3>
+  <div class="description" th:utext="${line.description}">
+    这里是线路介绍…
+  </div>
+
+  <!-- 返回主界面 -->
+  <a th:href="@{/users/index}" class="btn-back">← 返回主界面</a>
+</div>
+</body>
+</html>

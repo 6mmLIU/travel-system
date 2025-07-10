@@ -5,15 +5,18 @@ import com.example.travelsystem.model.User;
 import com.example.travelsystem.service.TourLineService;
 import com.example.travelsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * UserController 负责处理用户相关的功能，包括注册、登录、查看信息、更新信息、修改密码等操作。
+ * UserController 负责用户的注册/登录/个人中心/首页（含搜索）/订单等页面及其表单提交逻辑
  */
 @Controller
 @RequestMapping("/users")
@@ -23,47 +26,22 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
     private TourLineService tourLineService;
 
-    // 【登录页】
+
+    // —— 登录页 —— //
     @GetMapping("/login")
     public String loginPage() {
-        // 返回 Thymeleaf 模板: auth/login.html
         return "auth/login";
     }
 
-    // ========== 注释掉原先的自定义登录方法, 交由 Spring Security 内置流程处理 ==========
-    /*
-    @PostMapping("/login")
-    public String login(@ModelAttribute User user, Model model) {
-        User existingUser = userService.findByUsername(user.getUsername());
-        if (existingUser == null) {
-            model.addAttribute("error", "用户名不存在！");
-            return "auth/login";
-        }
-        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            model.addAttribute("error", "密码错误！");
-            return "auth/login";
-        }
-        model.addAttribute("user", existingUser);
-        model.addAttribute("message", "登录成功！");
-        // 这里也会查询已发布线路
-        List<TourLine> publishedLines = tourLineService.getAllPublishedTourLines();
-        model.addAttribute("publishedLines", publishedLines);
-        return "auth/index";
-    }
-    */
-
-    // 【注册页面】
+    // —— 注册页 —— //
     @GetMapping("/register")
     public String registerPage() {
         return "auth/register";
     }
 
-    // 【处理注册逻辑】
+    // —— 处理注册 —— //
     @PostMapping("/register")
     public String register(@ModelAttribute User user, Model model) {
         if (userService.findByUsername(user.getUsername()) != null) {
@@ -75,13 +53,69 @@ public class UserController {
         return "auth/login";
     }
 
-    // 【登录成功后访问首页，也可以显示已发布线路】
-    @GetMapping("/index")
-    public String showIndex(Model model) {
-        List<TourLine> publishedLines = tourLineService.getAllPublishedTourLines();
+    // —— 首页：展示已发布线路，支持搜索 —— //
+    @GetMapping({"/index", "/"})
+    public String showIndex(@RequestParam(value = "keyword", required = false) String keyword,
+                            Model model) {
+        List<TourLine> publishedLines;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // 先按关键字搜索，再过滤出已发布的
+            publishedLines = tourLineService
+                    .searchTourLines(keyword.trim())
+                    .stream()
+                    .filter(TourLine::isPublished)
+                    .collect(Collectors.toList());
+        } else {
+            // 无关键字，直接拿所有已发布
+            publishedLines = tourLineService.getAllPublishedTourLines();
+        }
         model.addAttribute("publishedLines", publishedLines);
+        model.addAttribute("keyword", keyword);
         return "auth/index";
     }
 
+    // —— 个人信息页面 —— //
+    @GetMapping("/profile")
+    public String profilePage(Model model) {
+        User current = getCurrentUser();
+        model.addAttribute("user", current);
+        return "auth/profile";
+    }
 
+    // —— 更新个人信息 —— //
+    @PostMapping("/profile")
+    public String updateProfile(@ModelAttribute User form,
+                                RedirectAttributes ra) {
+        User current = getCurrentUser();
+        form.setId(current.getId());
+        userService.updateUserInfo(form);
+        ra.addFlashAttribute("msg", "个人信息更新成功");
+        return "redirect:/users/profile";
+    }
+
+
+    // —— 提交修改密码 —— //
+    @PostMapping("/password")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 RedirectAttributes ra) {
+        User current = getCurrentUser();
+        try {
+            userService.changePassword(current.getId(), oldPassword, newPassword);
+            ra.addFlashAttribute("msg", "密码修改成功，请重新登录");
+            return "redirect:/logout";
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/users/password";
+        }
+    }
+
+
+
+
+    /** 工具：从 SecurityContext 拿当前完整 User 对象 */
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userService.findByUsername(auth.getName());
+    }
 }

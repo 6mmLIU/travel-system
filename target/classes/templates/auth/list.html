@@ -1,141 +1,167 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
+    <meta charset="UTF-8">
     <title>会员列表</title>
     <style>
+        /* 通用 */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background-color: #f0f8ff; /* 淡淡的蓝 */
             margin: 0;
             padding: 0;
         }
         h1 {
             text-align: center;
-            color: #333;
-            margin: 20px 0;
+            color: #fff;
+            margin: 0;
+            padding: 20px 0;
+            background: linear-gradient(90deg, #3399ff 0%, #66b2ff 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .container {
             max-width: 1000px;
-            margin: 0 auto;
+            margin: 30px auto;
             padding: 20px;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(51,153,255,0.1);
         }
-        a {
-            text-decoration: none;
-            color: #007bff;
+
+        /* 搜索 & 操作按钮 */
+        .search-form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
         }
-        a:hover {
-            text-decoration: underline;
+        .search-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #6699cc;
+            border-radius: 4px;
+            font-size: 14px;
         }
-        .add-member,
-        .search-form button {
+        .search-form button,
+        .add-member {
+            padding: 10px 15px;
+            background: #3399ff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .search-form button:hover,
+        .add-member:hover {
+            background: #1a75d1;
+        }
+        .btn-return {
             display: inline-block;
             padding: 10px 15px;
-            background: #28a745;
+            background: #6c757d;
             color: #fff;
             border-radius: 5px;
             margin-bottom: 15px;
-            transition: background-color 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
+            margin-left: 10px;
+            text-decoration: none;
+            transition: background 0.3s;
         }
-        .add-member:hover,
-        .search-form button:hover {
-            background: #218838;
+        .btn-return:hover {
+            background: #5a6268;
         }
-        .search-form input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
+
+        /* 表格 */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
         table th, table td {
-            text-align: left;
             padding: 12px;
             border: 1px solid #dee2e6;
+            text-align: left;
         }
         table th {
-            background-color: #007bff;
+            background: linear-gradient(90deg, #3399ff 0%, #66b2ff 100%);
             color: #fff;
         }
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
+        tbody tr:nth-child(even) {
+            background: #e6f2ff;
         }
-        table tr:hover {
-            background-color: #e9ecef;
+        tbody tr:hover {
+            background: #d0e7ff;
         }
-        .action-buttons a,
-        .action-buttons button {
-            padding: 5px 10px;
-            margin-right: 5px;
+
+        /* 操作列按钮 */
+        .action-buttons a.edit,
+        .action-buttons button.delete {
+            padding: 6px 12px;
             font-size: 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            color: #fff;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .action-buttons a {
+            transition: background 0.3s;
+            margin-right: 5px;
             text-decoration: none;
-            color: #fff;
         }
-        .edit {
-            background-color: #ffc107;
+        .action-buttons a.edit {
+            background: #66b2ff;
         }
-        .edit:hover {
-            background-color: #e0a800;
+        .action-buttons a.edit:hover {
+            background: #3399ff;
         }
-        .delete {
-            background-color: #dc3545;
-            color: #fff;
+        .action-buttons button.delete {
+            background: #dc3545;
         }
-        .delete:hover {
-            background-color: #c82333;
+        .action-buttons button.delete:hover {
+            background: #c82333;
         }
+
+        /* 分页 */
         .pagination {
             text-align: center;
         }
         .pagination a {
+            display: inline-block;
             padding: 8px 12px;
             margin: 0 5px;
-            text-decoration: none;
+            border: 1px solid #3399ff;
+            background: #fff;
+            color: #3399ff;
             border-radius: 5px;
-            color: #007bff;
-            border: 1px solid #007bff;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            text-decoration: none;
+            transition: background 0.3s, color 0.3s;
         }
         .pagination a:hover {
-            background-color: #007bff;
+            background: #3399ff;
             color: #fff;
         }
         .pagination span {
+            display: inline-block;
             padding: 8px 12px;
             margin: 0 5px;
-            border-radius: 5px;
-            background-color: #e9ecef;
+            background: #e3e6f0;
             color: #495057;
-            border: 1px solid #dee2e6;
+            border-radius: 5px;
         }
+
+        /* 弹出框 */
         .alert {
             position: fixed;
             top: 20px;
             right: 20px;
             background-color: #28a745;
-            color: white;
+            color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 1000;
             opacity: 0;
             transform: translateY(-20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s, transform 0.3s;
         }
         .alert.show {
             opacity: 1;
@@ -147,20 +173,20 @@
     </style>
 </head>
 <body>
+<h1>会员列表</h1>
 <div class="container">
-    <h1>会员列表</h1>
 
-    <!-- 搜索表单 -->
-    <form class="search-form" th:action="@{/members/search}" method="get" style="margin-bottom: 15px;">
+    <!-- 搜索 -->
+    <form class="search-form" th:action="@{/members/search}" method="get">
         <input type="text" name="keyword" placeholder="搜索姓名或邮箱" required>
         <button type="submit">搜索</button>
     </form>
 
-    <!-- 去掉了 filter 表单 -->
-
+    <!-- 新增 & 返回 -->
     <a href="/members/add" class="add-member">新增会员</a>
+    <a th:href="@{/users/index}" class="btn-return">← 返回主界面</a>
 
-    <!-- 表格展示会员列表 -->
+    <!-- 会员表格 -->
     <table>
         <thead>
         <tr>
@@ -178,7 +204,6 @@
             <td th:text="${member.name}"></td>
             <td th:text="${member.email}"></td>
             <td th:text="${member.phone}"></td>
-            <!-- 只改这里：如果 status 字段等于 "active"，显示“有效”，否则显示“无效” -->
             <td th:text="${member.status == 'active' ? '有效' : '无效'}"></td>
             <td class="action-buttons">
                 <a th:href="@{/members/edit/{id}(id=${member.id})}" class="edit">编辑</a>
@@ -187,7 +212,7 @@
                 </form>
             </td>
         </tr>
-        <tr th:if="${members.size() == 0}">
+        <tr th:if="${members.empty}">
             <td colspan="6" style="text-align:center;">暂无会员</td>
         </tr>
         </tbody>
@@ -195,30 +220,22 @@
 
     <!-- 分页 -->
     <div class="pagination">
-        <a th:if="${currentPage > 1}"
-           th:href="@{/members(page=${currentPage - 1})}">上一页</a>
+        <a th:if="${currentPage > 1}" th:href="@{/members(page=${currentPage - 1})}">上一页</a>
         <span>第 <span th:text="${currentPage}"></span> 页 / 共 <span th:text="${totalPages}"></span> 页</span>
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/members(page=${currentPage + 1})}">下一页</a>
+        <a th:if="${currentPage < totalPages}" th:href="@{/members(page=${currentPage + 1})}">下一页</a>
     </div>
 </div>
 
 <!-- 弹出框 -->
 <div class="alert" id="alert"></div>
-
 <script>
-    // 模拟弹出框提示操作成功
-    function showAlert(message, type = 'success') {
-        const alertBox = document.getElementById('alert');
-        alertBox.textContent = message;
-        alertBox.className = `alert show ${type === 'error' ? 'error' : ''}`;
-        setTimeout(() => {
-            alertBox.className = 'alert';
-        }, 3000);
+    function showAlert(msg, type='success') {
+        const a = document.getElementById('alert');
+        a.textContent = msg;
+        a.className = 'alert show' + (type==='error'?' error':'');
+        setTimeout(()=> a.className = 'alert', 3000);
     }
-
-    // 示例：删除后调用
-    // showAlert('删除成功！');
+    // 用法示例： showAlert('操作成功！');
 </script>
 </body>
 </html>

@@ -23,13 +23,17 @@ public class TourLineServiceImpl implements TourLineService {
         if (tourLine == null || tourLine.getTitle() == null || tourLine.getDestination() == null) {
             throw new IllegalArgumentException("TourLine or required fields cannot be null");
         }
+        // —— 新增：给 status 一个默认值，防止插入时为 null 导致 SQLIntegrityConstraintViolation
+        if (tourLine.getStatus() == null) {
+            tourLine.setStatus(0);  // 0 表示“未发布”
+        }
         tourLineMapper.insertTourLine(tourLine);
     }
 
     @Override
     public List<TourLine> searchTourLines(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            throw new IllegalArgumentException("Search keyword cannot be null or empty");
+            return tourLineMapper.findAllNoPaging();
         }
         return tourLineMapper.findByDestination(keyword.trim());
     }
@@ -67,16 +71,25 @@ public class TourLineServiceImpl implements TourLineService {
     }
 
     @Override
-    public List<TourLine> filterTourLines(String destination, Double minPrice, Double maxPrice,
-                                          Integer minDuration, Integer maxDuration,
-                                          String sortField, String sortDirection,
-                                          int page, int size) {
+    public List<TourLine> filterTourLines(String destination,
+                                          Double minPrice,
+                                          Double maxPrice,
+                                          Integer minDuration,
+                                          Integer maxDuration,
+                                          String sortField,
+                                          String sortDirection,
+                                          int page,
+                                          int size) {
         if (page < 1 || size < 1) {
             throw new IllegalArgumentException("Page and size must be greater than 0");
         }
         int offset = (page - 1) * size;
-        return tourLineMapper.filterTourLines(destination, minPrice, maxPrice,
-                minDuration, maxDuration, sortField, sortDirection, offset, size);
+        return tourLineMapper.filterTourLines(
+                destination, minPrice, maxPrice,
+                minDuration, maxDuration,
+                sortField, sortDirection,
+                offset, size
+        );
     }
 
     @Override
@@ -100,11 +113,32 @@ public class TourLineServiceImpl implements TourLineService {
 
     @Override
     public List<TourLine> getAllTourLinesNoPaging() {
-        return tourLineMapper.findAllNoPaging(); // 调用 Mapper 层实现
-    }
-    @Override
-    public int getTotalRecords() {
-        return tourLineMapper.countAll(); // 调用 Mapper 方法获取总记录数
+        return tourLineMapper.findAllNoPaging();
     }
 
+    @Override
+    public int getTotalRecords() {
+        return tourLineMapper.countAll();
+    }
+
+    @Override
+    public int countFilter(String destination,
+                           Double minPrice,
+                           Double maxPrice,
+                           Integer minDuration,
+                           Integer maxDuration) {
+        return tourLineMapper.countFilter(
+                destination, minPrice, maxPrice, minDuration, maxDuration
+        );
+    }
+
+    @Override
+    public List<TourLine> getFavoritesByUser(Integer id) {
+        return List.of();
+    }
+
+    @Override
+    public boolean toggleFavorite(Integer id, Integer lineId) {
+        return false;
+    }
 }

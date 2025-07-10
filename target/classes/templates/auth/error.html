@@ -2,100 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8"/>
-    <title th:text="${status == null ? '未知错误' : (status + '错误')}">错误页面</title>
+    <title th:text="${status == null ? '未知错误' : (status + ' 错误')}">错误页面</title>
     <style>
+        /* 整页背景 */
         body {
             margin: 0;
             padding: 0;
-            /* 假设 background.jpg 放在 static 根目录，就用绝对路径 /background.jpg */
-            background: url("/images/background.jpg") no-repeat center center fixed;
-            background-size: cover; /* 让背景图等比铺满 */
-            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f0f8ff; /* AliceBlue */
+            font-family: "Microsoft YaHei", Arial, sans-serif;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
         }
+        /* 错误卡片 */
         .error-card {
-            background: #fff;
-            width: 420px;
-            padding: 30px 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            text-align: center;
-            animation: fadeIn 0.6s ease-in-out;
             position: relative;
+            width: 90%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,102,204,0.1);
             overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
         }
+        /* 顶部彩带 */
         .error-card::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #007bff, #00c6ff);
+            height: 6px;
+            background: linear-gradient(90deg, #0066cc 0%, #3399ff 100%);
         }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        /* 内容区 */
+        .inner {
+            padding: 30px 20px;
+            text-align: center;
         }
         .error-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #0066cc;
         }
         .error-desc {
-            margin-bottom: 20px;
-            color: #666;
-            line-height: 1.5;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
+        /* “回家”按钮 */
         .btn-home {
             display: inline-block;
-            padding: 10px 25px;
-            background: linear-gradient(90deg, #007bff, #00c6ff);
+            padding: 10px 28px;
+            background: linear-gradient(90deg, #3399ff 0%, #66b2ff 100%);
             color: #fff;
-            text-decoration: none;
+            border: none;
             border-radius: 25px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 14px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .btn-home:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 15px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(51,153,255,0.3);
         }
     </style>
 </head>
 <body>
 <div class="error-card">
-    <div th:switch="${status}">
-        <div th:case="403">
-            <div class="error-title">权限不足</div>
-            <div class="error-desc">抱歉，你没有权限访问此页面。</div>
+    <div class="inner">
+        <div th:switch="${status}">
+            <div th:case="403">
+                <div class="error-title">权限不足 😕</div>
+                <div class="error-desc">抱歉，你没有权限访问此页面。</div>
+            </div>
+            <div th:case="404">
+                <div class="error-title">404 - 页面走丢了 🕵️‍♂️</div>
+                <div class="error-desc">要访问的页面不见了，是不是输错地址啦？</div>
+            </div>
+            <div th:case="500">
+                <div class="error-title">500 - 服务器打盹中 ☕</div>
+                <div class="error-desc">服务器开小差了，请稍后再试。</div>
+            </div>
+            <div th:case="400">
+                <div class="error-title">400 - 请求有误 🚧</div>
+                <div class="error-desc">参数或请求不对，请检查后重试。</div>
+            </div>
+            <div th:case="*">
+                <div class="error-title">未知错误 🤷‍♀️</div>
+                <div class="error-desc">出了一点小意外，请回主界面试试。</div>
+            </div>
         </div>
-        <div th:case="404">
-            <div class="error-title">404 - 页面丢失</div>
-            <div class="error-desc">要访问的页面不在了，看看地址是不是输错了？</div>
-        </div>
-        <div th:case="500">
-            <div class="error-title">服务器错误</div>
-            <div class="error-desc">服务器开小差了，请稍后再试。</div>
-        </div>
-        <div th:case="400">
-            <div class="error-title">请求错误</div>
-            <div class="error-desc">参数或请求有误，请检查后重试。</div>
-        </div>
-        <div th:case="*">
-            <div class="error-title">出现未知错误</div>
-            <div class="error-desc">请稍后重试。</div>
-        </div>
+        <a th:href="@{/users/index}" class="btn-home">🏠 返回主界面</a>
     </div>
-    <a class="btn-home" href="/users/login">返回首页</a>
 </div>
 </body>
 </html>

@@ -1,12 +1,15 @@
 package com.example.travelsystem.service.impl;
 
 import com.example.travelsystem.mapper.FavoriteMapper;
+import com.example.travelsystem.model.TourLine;
 import com.example.travelsystem.service.FavoriteService;
-import com.example.travelsystem.utils.RedisUtil;
+import com.example.travelsystem.service.TourLineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FavoriteServiceImpl implements FavoriteService {
@@ -15,56 +18,40 @@ public class FavoriteServiceImpl implements FavoriteService {
     private FavoriteMapper favoriteMapper;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private TourLineService tourLineService;
+
+    @Override
+    @Transactional
+    public void addFavorite(Integer userId, Integer tourLineId) {
+        // 防重复：先检查
+        if (!isFavorite(userId, tourLineId)) {
+            favoriteMapper.addFavorite(userId, tourLineId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeFavorite(Integer userId, Integer tourLineId) {
+        favoriteMapper.removeFavorite(userId, tourLineId);
+    }
 
     @Override
     public List<Integer> findFavoriteTourLinesByUserId(Integer userId) {
-        String cacheKey = "favorites_user_" + userId;
-
-        // 检查 Redis 缓存
-        if (redisUtil.hasKey(cacheKey)) {
-            return (List<Integer>) redisUtil.get(cacheKey);
-        }
-
-        // 查询数据库
-        List<Integer> favoriteTourLines = favoriteMapper.findFavoriteTourLinesByUserId(userId);
-
-        // 设置缓存，有效期 10 分钟
-        redisUtil.set(cacheKey, favoriteTourLines, 10 * 60);
-
-        return favoriteTourLines;
-    }
-
-    @Override
-    public void addFavorite(Integer userId, Integer tourLineId) {
-        if (!isFavorite(userId, tourLineId)) {
-            favoriteMapper.addFavorite(userId, tourLineId);
-
-            // 更新缓存
-            String cacheKey = "favorites_user_" + userId;
-            if (redisUtil.hasKey(cacheKey)) {
-                List<Integer> cachedFavorites = (List<Integer>) redisUtil.get(cacheKey);
-                cachedFavorites.add(tourLineId);
-                redisUtil.set(cacheKey, cachedFavorites, 10 * 60);
-            }
-        }
-    }
-
-    @Override
-    public void removeFavorite(Integer userId, Integer tourLineId) {
-        favoriteMapper.removeFavorite(userId, tourLineId);
-
-        // 更新缓存
-        String cacheKey = "favorites_user_" + userId;
-        if (redisUtil.hasKey(cacheKey)) {
-            List<Integer> cachedFavorites = (List<Integer>) redisUtil.get(cacheKey);
-            cachedFavorites.remove(tourLineId);
-            redisUtil.set(cacheKey, cachedFavorites, 10 * 60);
-        }
+        return favoriteMapper.findFavoriteTourLinesByUserId(userId);
     }
 
     @Override
     public boolean isFavorite(Integer userId, Integer tourLineId) {
         return favoriteMapper.findByUserIdAndTourLineId(userId, tourLineId) != null;
+    }
+
+    @Override
+    public List<TourLine> listFavorites(Integer userId) {
+        // 拿到收藏的线路 ID 列表，再查询实体
+        List<Integer> ids = favoriteMapper.findFavoriteTourLinesByUserId(userId);
+        return ids.stream()
+                .map(tourLineService::findById)
+                .filter(line -> line != null)
+                .collect(Collectors.toList());
     }
 }

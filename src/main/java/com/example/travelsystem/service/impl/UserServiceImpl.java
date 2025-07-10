@@ -1,17 +1,19 @@
 package com.example.travelsystem.service.impl;
 
+import com.example.travelsystem.mapper.TourLineMapper;
 import com.example.travelsystem.mapper.UserMapper;
 import com.example.travelsystem.model.User;
-import com.example.travelsystem.service.TourLineService;
 import com.example.travelsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * 用户业务实现
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -19,24 +21,24 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private TourLineMapper tourLineMapper;
 
     @Autowired
-    private TourLineService tourLineService;
+    private PasswordEncoder passwordEncoder;
+
+    /* ===================== 注册 / 登录相关 ===================== */
 
     @Override
+    @Transactional
     public void register(User user) {
-        // 注册时可以对 createdAt 设置一个当前时间
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        user.setCreatedAt(now);
-
-        // 密码加密
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // 可以给一个默认角色
-        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
-            user.setRole("ROLE_USER");
+        // 1. 用户名唯一性校验
+        if (userMapper.findByUsername(user.getUsername()) != null) {
+            throw new IllegalArgumentException("用户名已存在");
         }
-        userMapper.insertUser(user);
+        // 2. 加密密码
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // 3. 插入数据库
+        userMapper.insert(user);
     }
 
     @Override
@@ -45,68 +47,59 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserInfo(User user) {
-        User existingUser = userMapper.findById(user.getId());
-        if (existingUser == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-        // 这里如果想在更新时同步更新时间，也可以加上
-        // String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        // user.setCreatedAt(now);
+    public User findById(Integer userId) {
+        return userMapper.findById(userId);
+    }
 
-        userMapper.updateUser(user);
+    /* ===================== 个人信息 ===================== */
+
+    @Override
+    @Transactional
+    public void updateUserInfo(User user) {
+        userMapper.updateProfile(user);   // 只改昵称 / 邮箱 / 头像等
     }
 
     @Override
+    @Transactional
     public void changePassword(Integer userId, String oldPassword, String newPassword) {
-        User user = userMapper.findById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Old password is incorrect");
+        User u = userMapper.findById(userId);
+        if (u == null || !passwordEncoder.matches(oldPassword, u.getPassword())) {
+            throw new IllegalArgumentException("旧密码错误");
         }
         userMapper.updatePassword(userId, passwordEncoder.encode(newPassword));
     }
 
-    @Override
-    public List<User> getAllUsers(int page, int size, String sortField, String sortDirection) {
-        int offset = (page - 1) * size;
-        return userMapper.findAll(offset, size, sortField, sortDirection);
-    }
+    /* ===================== 后台管理：分页 / 统计 / 删除 ===================== */
 
     @Override
-    public void deleteUser(Integer userId) {
-        User user = userMapper.findById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-        userMapper.deleteUser(userId);
+    public List<User> getAllUsers(int page, int size, String sortField, String sortDirection) {
+        int offset  = (page - 1) * size;
+        String orderBy = sortField + " " + sortDirection;   // 例：username ASC
+        return userMapper.findAllUsers(offset, size, orderBy);
     }
 
     @Override
     public int countUsers() {
-        return userMapper.countUsers();
+        return userMapper.count();
     }
 
     @Override
-    public User findById(Integer userId) {
-        return userMapper.findById(userId);
+    @Transactional
+    public void deleteUser(Integer userId) {
+        userMapper.deleteById(userId);
     }
+
+    /* ===================== 旅游线路上下架（管理员功能） ===================== */
+
     @Override
+    @Transactional
     public void publishTourLine(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("Invalid TourLine ID");
-        }
-        tourLineService.publishTourLine(id);
+        tourLineMapper.publishById(id);
     }
 
     @Override
+    @Transactional
     public void unpublishTourLine(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("Invalid TourLine ID");
-        }
-        tourLineService.unpublishTourLine(id);
+        tourLineMapper.unpublishById(id);
     }
-
 }

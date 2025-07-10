@@ -1,195 +1,222 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
+    <meta charset="UTF-8">
     <title>旅游线路管理</title>
     <style>
+        /* 通用 */
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
-            line-height: 1.6;
+            background-color: #f0f8ff; /* AliceBlue */
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
         }
-
         h1 {
             text-align: center;
-            color: #343a40;
-            margin-top: 20px;
+            color: #fff;
+            padding: 20px 0;
+            margin: 0;
+            background: linear-gradient(90deg, #0066cc 0%, #3399ff 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         .container {
             width: 90%;
             max-width: 1200px;
-            margin: 20px auto;
-            background: #ffffff;
-            padding: 20px;
+            margin: 30px auto;
+            background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,102,204,0.1); /* 带点蓝色的阴影 */
         }
 
-        form {
+        /* 顶部按钮 */
+        .top-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
             margin-bottom: 20px;
         }
+        .top-btns .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #fff;
+            transition: background 0.3s;
+        }
+        .btn-add {
+            background: #007bff;
+        }
+        .btn-add:hover {
+            background: #0056b3;
+        }
+        .btn-back {
+            background: #6c757d;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+        }
 
-        form .form-group {
+        /* 搜索 & 筛选 */
+        form {
+            margin-bottom: 25px;
+        }
+        .form-group {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
-
-        form .form-group label {
-            flex: 0 0 150px;
+        .form-group label {
+            flex: 0 0 100px;
+            color: #555;
             font-weight: bold;
-            color: #495057;
         }
-
-        form .form-group input {
+        .form-group input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border: 1px solid #6699cc;
+            border-radius: 4px;
+            font-size: 14px;
         }
-
         form button {
-            display: block;
-            width: 100%;
-            padding: 10px;
+            margin-left: 10px;
+            padding: 8px 16px;
             background: #007bff;
-            color: #ffffff;
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            font-size: 14px;
             cursor: pointer;
-            font-size: 16px;
+            transition: background 0.3s;
         }
-
         form button:hover {
             background: #0056b3;
         }
 
+        /* 表格 */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-bottom: 20px;
         }
-
-        table th, table td {
-            border: 1px solid #dee2e6;
+        thead th {
+            background: linear-gradient(90deg, #3399ff 0%, #66b2ff 100%);
+            color: #fff;
             padding: 12px;
             text-align: center;
+            font-weight: normal;
+            border: none;
+        }
+        tbody td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e3e6f0;
+            color: #555;
+        }
+        tbody tr:nth-child(even) td {
+            background: #e6f2ff; /* 淡淡的蓝 */
+        }
+        tbody tr:hover td {
+            background: #d0e7ff;
         }
 
-        table th {
-            background: #007bff;
-            color: #ffffff;
-        }
-
-        table td {
-            color: #495057;
-        }
-
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        table tr:hover {
-            background-color: #e9ecef;
-        }
-
+        /* 操作按钮 */
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
-
-        .action-buttons form {
-            margin: 0;
-        }
-
         .action-buttons button {
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 6px 14px;
             border: none;
-            cursor: pointer;
+            border-radius: 4px;
+            color: #fff;
             font-size: 14px;
-            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-publish {
+            background: #1e90ff;
+        }
+        .btn-publish:hover {
+            background: #1c86ee;
+        }
+        .btn-unpublish {
+            background: #e74a3b;
+        }
+        .btn-unpublish:hover {
+            background: #c43d31;
         }
 
-        .publish {
-            background: #28a745;
-        }
-
-        .publish:hover {
-            background: #218838;
-        }
-
-        .unpublish {
-            background: #dc3545;
-        }
-
-        .unpublish:hover {
-            background: #c82333;
-        }
-
+        /* 分页 */
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-        }
-
-        .pagination a, .pagination span {
+            gap: 12px;
             font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 5px;
-            text-decoration: none;
         }
-
         .pagination a {
+            padding: 6px 12px;
             background: #007bff;
-            color: #ffffff;
-            cursor: pointer;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
         }
-
         .pagination a:hover {
             background: #0056b3;
         }
-
         .pagination span {
-            background: #e9ecef;
-            color: #495057;
+            padding: 6px 12px;
+            background: #e3e6f0;
+            color: #555;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 <h1>旅游线路管理</h1>
-
 <div class="container">
-    <!-- 筛选表单 -->
+    <div class="top-btns">
+        <a th:href="@{/tour-lines/add}" class="btn btn-add">+ 新增线路</a>
+        <a th:href="@{/users/index}" class="btn btn-back">← 返回主界面</a>
+    </div>
+
+    <form th:action="@{/tour-lines/search}" method="get">
+        <div class="form-group">
+            <label for="keyword">关键字：</label>
+            <input id="keyword" name="keyword" th:value="${keyword}" placeholder="请输入关键字…"/>
+            <button type="submit">搜索</button>
+        </div>
+    </form>
+
     <form th:action="@{/tour-lines/filter}" method="get">
         <div class="form-group">
             <label for="destination">目的地：</label>
-            <input type="text" id="destination" name="destination" th:value="${destination}" placeholder="请输入目的地">
+            <input id="destination" name="destination" th:value="${destination}" placeholder="请输入目的地"/>
         </div>
         <div class="form-group">
             <label for="minPrice">最低价格：</label>
-            <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" step="0.01" placeholder="最低价格">
+            <input id="minPrice" name="minPrice" type="number" step="0.01" th:value="${minPrice}" placeholder="最低价格"/>
         </div>
         <div class="form-group">
             <label for="maxPrice">最高价格：</label>
-            <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" step="0.01" placeholder="最高价格">
+            <input id="maxPrice" name="maxPrice" type="number" step="0.01" th:value="${maxPrice}" placeholder="最高价格"/>
         </div>
         <div class="form-group">
             <label for="minDuration">最短时长：</label>
-            <input type="number" id="minDuration" name="minDuration" th:value="${minDuration}" placeholder="最短时长">
+            <input id="minDuration" name="minDuration" type="number" th:value="${minDuration}" placeholder="最短时长"/>
         </div>
         <div class="form-group">
             <label for="maxDuration">最长时长：</label>
-            <input type="number" id="maxDuration" name="maxDuration" th:value="${maxDuration}" placeholder="最长时长">
+            <input id="maxDuration" name="maxDuration" type="number" th:value="${maxDuration}" placeholder="最长时长"/>
         </div>
-        <button type="submit">搜索</button>
+        <button type="submit">筛选</button>
     </form>
 
-    <!-- 旅游线路表 -->
     <table>
         <thead>
         <tr>
@@ -203,33 +230,54 @@
         </thead>
         <tbody>
         <tr th:each="line : ${tourLines}">
-            <td th:text="${line.title}"></td>
-            <td th:text="${line.destination}"></td>
-            <td th:text="${line.price}"></td>
-            <td th:text="${line.duration}"></td>
-            <td th:text="${line.published ? '上架' : '下架'}"></td>
+            <td th:text="${line.title}">描述</td>
+            <td th:text="${line.destination}">目的地</td>
+            <td th:text="${line.price}">价格</td>
+            <td th:text="${line.duration}">时长</td>
+            <td th:text="${line.published ? '上架' : '下架'}">状态</td>
             <td class="action-buttons">
-                <!-- 发布按钮 -->
                 <form th:action="@{/tour-lines/publish/{id}(id=${line.id})}" method="post">
-                    <button type="submit" class="publish" th:disabled="${line.published}">上架</button>
+                    <button type="submit" class="btn-publish" th:disabled="${line.published}">上架</button>
                 </form>
-                <!-- 下架按钮 -->
                 <form th:action="@{/tour-lines/unpublish/{id}(id=${line.id})}" method="post">
-                    <button type="submit" class="unpublish" th:disabled="${!line.published}">下架</button>
+                    <button type="submit" class="btn-unpublish" th:disabled="${!line.published}">下架</button>
                 </form>
             </td>
         </tr>
-        <tr th:if="${tourLines.size() == 0}">
+        <tr th:if="${tourLines.empty}">
             <td colspan="6">暂无旅游线路</td>
         </tr>
         </tbody>
     </table>
 
-    <!-- 分页 -->
     <div class="pagination">
-        <a th:href="@{/tour-lines/all(page=${currentPage - 1}, size=${size})}" th:if="${currentPage > 1}">上一页</a>
-        <span>第 <span th:text="${currentPage}"></span> 页，共 <span th:text="${totalPages}"></span> 页</span>
-        <a th:href="@{/tour-lines/all(page=${currentPage + 1}, size=${size})}" th:if="${currentPage < totalPages}">下一页</a>
+        <th:block th:if="${keyword != null && !#strings.isEmpty(keyword)}">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/tour-lines/search(page=${currentPage-1},size=${size},keyword=${keyword})}">上一页</a>
+            <span>第 <span th:text="${currentPage}">1</span> 页，共 <span th:text="${totalPages}">1</span> 页</span>
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/tour-lines/search(page=${currentPage+1},size=${size},keyword=${keyword})}">下一页</a>
+        </th:block>
+        <th:block th:if="${(keyword == null or #strings.isEmpty(keyword)) &&
+                           destination != null && !#strings.isEmpty(destination)}">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/tour-lines/filter(page=${currentPage-1},size=${size},
+                       destination=${destination},minPrice=${minPrice},maxPrice=${maxPrice},
+                       minDuration=${minDuration},maxDuration=${maxDuration})}">上一页</a>
+            <span>第 <span th:text="${currentPage}">1</span> 页，共 <span th:text="${totalPages}">1</span> 页</span>
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/tour-lines/filter(page=${currentPage+1},size=${size},
+                       destination=${destination},minPrice=${minPrice},maxPrice=${maxPrice},
+                       minDuration=${minDuration},maxDuration=${maxDuration})}">下一页</a>
+        </th:block>
+        <th:block th:if="${(keyword == null or #strings.isEmpty(keyword)) &&
+                           (destination == null or #strings.isEmpty(destination))}">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/tour-lines/all(page=${currentPage-1},size=${size})}">上一页</a>
+            <span>第 <span th:text="${currentPage}">1</span> 页，共 <span th:text="${totalPages}">1</span> 页</span>
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/tour-lines/all(page=${currentPage+1},size=${size})}">下一页</a>
+        </th:block>
     </div>
 </div>
 </body>
